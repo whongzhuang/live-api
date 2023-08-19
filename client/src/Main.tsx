@@ -40,8 +40,8 @@ const App: React.FC = () => {
 
     return (
         <div>
-            <div>
-                <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
+            <div >
+                <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items}  />
             </div>
             <br />
             <br />

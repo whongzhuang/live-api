@@ -1,8 +1,9 @@
 const express = require('express');
 const app = express();
 const port = 5000;
+const config = require('./config.json');
+const sqlite3db = require('./sqlite3.js');
 
-//允许跨域
 app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*'); //项目上线后改成页面的地址
   res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,Content-Length,Authorization,Accept');
@@ -14,17 +15,43 @@ app.all('*', function (req, res, next) {
 });
 
 
-// 处理 GET 请求
+sqlite3db.connect();
+
+
 app.get('/', (req, res) => {
   res.send('Hello, Express!');
 });
 
-// 处理 POST 请求
-app.post('/post-route', (req, res) => {
-  res.send('This is a POST request.');
+app.post('/postapi', (req, res) => {
+  sqlite3db.insertapiinfo(req.query.url, req.query.desc).then((data) => {
+    res.send(data);
+  }).catch((err) => {
+    res.send(err);
+  });
 });
 
-// 启动服务器
+
+app.get('/searchapi', (req, res) => {
+  sqlite3db.serachapiinfo(req.query.searchTerm).then((data) => {
+    res.send(data);
+  }).catch((err) => {
+    res.send(err);
+  });
+});
+
+router.post('/insertdata', async (req, res) => {
+  const { url, desc, in_json, out_json } = req.body;
+  try {
+    const apiId = await sqlite3db.insertData(url, desc, in_json, out_json);
+    res.status(201).json({ message: 'Data inserted successfully', apiId });
+  } catch (error) {
+    console.error('Error inserting data:', error);
+    res.status(500).json({ error: 'An error occurred while inserting data' });
+  }
+});
+
+
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

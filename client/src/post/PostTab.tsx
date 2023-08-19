@@ -1,7 +1,11 @@
 
 import React, { useRef, useState } from 'react';
-import { Input, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import Post from './Post';
+import TextArea from "antd/es/input/TextArea";
+import { Button, Col, Drawer, Form, Input, Row, Space } from 'antd';
+
+
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -63,20 +67,29 @@ const PostTab = () => {
 
     return (
         <div>
-            <Input placeholder='search api'></Input>
+            <Row>
+                <Col span={8} offset={8}>
+                    <Input placeholder='search api'></Input>
+                </Col>
+            </Row>
             <br />
             <br />
-            <Tabs
-                type="editable-card"
-                onChange={onChange}
-                activeKey={activeKey}
-                onEdit={onEdit}>
-                {items.map((item) => (
-                    <Tabs.TabPane tab={item.label} key={item.key}>
-                        {item.children}
-                    </Tabs.TabPane>
-                ))}
-            </Tabs>
+            <Row>
+                <Col span={20} offset={2}>
+                    <Tabs
+                        type="editable-card"
+                        onChange={onChange}
+                        activeKey={activeKey}
+                        onEdit={onEdit}>
+                        {items.map((item) => (
+                            <Tabs.TabPane tab={item.label} key={item.key}>
+                                {item.children}
+                            </Tabs.TabPane>
+                        ))}
+                    </Tabs>
+                </Col>
+            </Row>
+
         </div>
     )
 }

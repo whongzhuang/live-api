@@ -1,106 +1,108 @@
 import React from "react";
 import TextArea from "antd/es/input/TextArea";
-import { Button, Col, Drawer, Form, Input, Row, Space } from 'antd';
+import { Button, Col, Drawer, Form, Input, Row, Space, message } from 'antd';
 
 const Post = () => {
     const [open, setOpen] = React.useState(false);
     const [outtxt, setouttxt] = React.useState('');
+    const [url, seturl] = React.useState('');
+    const [injson, setinjson] = React.useState('');
+    const [desc, setdesc] = React.useState('');
 
 
     const onClose = () => {
         setOpen(false);
     };
 
-    const onFinish = async (values: any) => {
-        var svc_name = values.svc_name;
-        var intxt = values.intxt;
-        setouttxt(`{
-    "call_type": "${svc_name}",
-        }`);
-    };
-
-    const onFinishFailed = () => {
-    }
     const showDrawer = () => {
         setOpen(true);
     };
 
+    const postapi = () => {
+        setouttxt('');
+        if (url === '') {
+            message.error('api name is empty');
+            return;
+        }
+        if (injson === '') {
+            message.error('input json is empty');
+            return;
+        }
+        let body = {}
+
+        fetch('http://localhost:5000/insertdata', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: injson,
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+                setouttxt(JSON.stringify(data));
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+    const apichange = (e: any) => {
+        seturl(e.target.value);
+    }
+    const injsonchange = (e: any) => {
+        setinjson(e.target.value);
+    }
+
+    const insertdata = () => {
+        fetch('http://localhost:5000/insertdata', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: url, desc: desc, in_json: injson, out_json: outtxt }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+                setouttxt(JSON.stringify(data));
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+
     return (
         <div>
-            <Form
-                validateTrigger={'onBlur'}
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
-                name="basic"
-                labelCol={{
-                    span: 3,
-                }}
-                wrapperCol={{
-                    span: 13,
-                }}
-                initialValues={{
-                    remember: true,
-                    call_type: 'HSF',
-                }}
-                autoComplete="off"
-            >
-                <Row>
-                    <Col span={12}>
-                        <Form.Item
-                            label="svc-name"
-                            name="svc_name"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'can not empty',
-                                },
-                            ]}
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span={1}>
-                        <Form.Item
-                        >
-                            <Button type="primary" htmlType="submit">
-                                run
-                            </Button>
-                        </Form.Item>
-                    </Col>
-                    <Col span={1}>
-                        <Form.Item
-                        >
-                            <Button onClick={() => {
-                                showDrawer();
-                            }}>save</Button>
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span={10}>
-                        <Form.Item
-                            style={{ width: 1100 }}
-                            name='intxt'
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'can not empty',
-                                },
-                            ]}>
-                            <TextArea rows={30} placeholder={'content'}>
-                            </TextArea>
-                        </Form.Item>
-                    </Col>
-                    <Col span={10}>
-                        <Form.Item style={{ width: 1100 }}>
-                            <TextArea rows={30} value={outtxt} placeholder={'return'}>
-                            </TextArea>
-                        </Form.Item>
-                    </Col>
-                </Row>
-            </Form>
+            <br />
+            <Row>
+                <Col span={8} offset={1}>
+                    <Input onChange={apichange} />
+                </Col>
+                <Col span={5}>
+                    <Space size={"middle"}>
+                        <Button type="primary" onClick={postapi}>
+                            run
+                        </Button>
+                        <Button onClick={() => {
+                            showDrawer();
+                        }}>save</Button>
+                    </Space>
+                </Col>
+            </Row>
+            <br />
+
+            <br />
+            <Row justify={"space-around"}>
+                <Col span={10}>
+                    <TextArea rows={30} placeholder={'content'} onChange={injsonchange}>
+                    </TextArea>
+                </Col>
+                <Col span={10}>
+                    <TextArea rows={30} value={outtxt} placeholder={'return'}>
+                    </TextArea>
+                </Col>
+            </Row>
             <div>
                 <Drawer
                     title="Save a Api"
@@ -111,7 +113,7 @@ const Post = () => {
                     extra={
                         <Space>
                             <Button onClick={onClose}>Cancel</Button>
-                            <Button onClick={onClose} type="primary">
+                            <Button onClick={insertdata} type="primary">
                                 Submit
                             </Button>
                         </Space>
