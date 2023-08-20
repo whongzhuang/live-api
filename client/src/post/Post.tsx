@@ -121,7 +121,7 @@ const Post = () => {
                 <Col span={8} offset={1}>
                     <Input onChange={apichange} placeholder="input api" />
                 </Col>
-                <Col span={5}>
+                <Col span={3}>
                     <Space size={"middle"}>
                         <Button type="primary" onClick={postapi}>
                             run
@@ -133,8 +133,8 @@ const Post = () => {
                 </Col>
             </Row>
             <br />
-            <Row style={{textAlign:"left"}}>
-                <Col span={12} offset={1}>
+            <Row style={{ textAlign: "left",alignItems:"center" }}>
+                <Col span={8} offset={1}>
                     <Space size={[0, 8]} wrap>
                         <Tag color="magenta">magenta</Tag>
                         <Tag color="red">red</Tag>
@@ -146,6 +146,11 @@ const Post = () => {
                         <Tag color="cyan">cyan</Tag>
                         <Tag color="cyan">cyan</Tag>
                     </Space>
+                </Col>
+                <Col span={5} push={4}>
+                    <div>
+                        <p style={{color:'red'}}>调用时间：300ms，主机1.1.1.1</p>
+                    </div>
                 </Col>
             </Row>
 
