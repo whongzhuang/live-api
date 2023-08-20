@@ -57,6 +57,12 @@ const App: React.FC = () => {
             {
                 current === 'settings' ? <Settings /> : null
             }
+            <div>
+                <p style={{ color: 'grey' }}>by wanghz</p>
+            </div>
+            <br />
+            <br />
+            <br />
         </div>
     );
 };

@@ -3,6 +3,7 @@ import TextArea from "antd/es/input/TextArea";
 import { Button, Col, Drawer, Form, Input, Row, Space, message } from 'antd';
 import { Select } from 'antd';
 import type { SelectProps } from 'antd';
+import { Divider, Tag } from 'antd';
 
 
 const handleChange = (value: string[]) => {
@@ -132,24 +133,37 @@ const Post = () => {
                 </Col>
             </Row>
             <br />
+            <Row style={{textAlign:"left"}}>
+                <Col span={12} offset={1}>
+                    <Space size={[0, 8]} wrap>
+                        <Tag color="magenta">magenta</Tag>
+                        <Tag color="red">red</Tag>
+                        <Tag color="volcano">volcano</Tag>
+                        <Tag color="orange">orange</Tag>
+                        <Tag color="gold">gold</Tag>
+                        <Tag color="lime">lime</Tag>
+                        <Tag color="green">green</Tag>
+                        <Tag color="cyan">cyan</Tag>
+                        <Tag color="cyan">cyan</Tag>
+                    </Space>
+                </Col>
+            </Row>
 
             <br />
             <Row justify={"space-around"}>
                 <Col span={10}>
-                    <TextArea rows={50} placeholder={'content'} onChange={injsonchange}>
+                    <TextArea rows={40} placeholder={'content'} onChange={injsonchange}>
                     </TextArea>
                 </Col>
                 <Col span={10}>
-                    <TextArea rows={50} value={outtxt} placeholder={'return'}>
+                    <TextArea rows={40} value={outtxt} placeholder={'return'}>
                     </TextArea>
                 </Col>
             </Row>
             <Row>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
+                <br />
+                <br />
+                <br />
             </Row>
             <div>
                 <Drawer
