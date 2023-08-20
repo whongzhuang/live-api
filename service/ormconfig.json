@@ -1,0 +1,8 @@
+{
+    "type": "sqlite",
+    "database": "C:/Users/leovo/Desktop/sqllite3/mydatabase.db",
+    "entities": [
+        "src/entities/*.ts"
+    ],
+    "synchronize": true
+}
