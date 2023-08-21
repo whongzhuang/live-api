@@ -43,6 +43,51 @@ app.get('/searchapi', async (req: { query: { searchTerm: any; }; }, res: { send:
 });
 
 
+
+app.get('/getApiListsByPage', async (req: any, res: { send: (arg0: any) => void; }) => {
+  const connection: Connection = await createConnection();
+  try {
+    const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
+    console.log("Query result:", queryResult);
+    res.send(queryResult);
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    // 关闭连接
+    await connection.close();
+  }
+});
+
+app.get('/getApiContentByApiId', async (req: any, res: { send: (arg0: any) => void; }) => {
+  const connection: Connection = await createConnection();
+  try {
+    const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
+    console.log("Query result:", queryResult);
+    res.send(queryResult);
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    // 关闭连接
+    await connection.close();
+  }
+});
+
+app.get('/deleteApiInfoByApiId', async (req: any, res: { send: (arg0: any) => void; }) => {
+  const connection: Connection = await createConnection();
+  try {
+    const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
+    console.log("Query result:", queryResult);
+    res.send(queryResult);
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    // 关闭连接
+    await connection.close();
+  }
+});
+
+
+
 app.get('/getApiByLike', async (req: any, res: { send: (arg0: any) => void; }) => {
   const connection: Connection = await createConnection();
   try {
