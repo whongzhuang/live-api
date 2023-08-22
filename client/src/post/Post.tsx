@@ -9,7 +9,7 @@ import { Divider, Tag } from 'antd';
 const handleChange = (value: string[]) => {
     console.log(`selected ${value}`);
 };
-const Post = () => {
+const Post = (props?: { api_id?: string; }) => {
     const [open, setOpen] = React.useState(false);
     const [outtxt, setouttxt] = React.useState('');
     const [url, seturl] = React.useState('');
@@ -25,6 +25,37 @@ const Post = () => {
     const onClose = () => {
         setOpen(false);
     };
+
+    React.useEffect(() => {
+        if (props?.api_id) {
+            fetch('http://localhost:5000/getapi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ api_id: props.api_id }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log('Success:', data);
+                    seturl(data.url);
+                    setinjson(data.in_json);
+                    setouttxt(data.out_json);
+                    setdesc(data.desc);
+                    let options: SelectProps['options'] = [];
+                    for (let i = 0; i < data.labels.length; i++) {
+                        options.push({
+                            label: data.labels[i],
+                            value: data.labels[i],
+                        });
+                    }
+                    setoptions(options);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+    }, []);
 
     const showDrawer = () => {
         setOpen(true);
@@ -133,7 +164,7 @@ const Post = () => {
                 </Col>
             </Row>
             <br />
-            <Row style={{ textAlign: "left",alignItems:"center" }}>
+            <Row style={{ textAlign: "left", alignItems: "center" }}>
                 <Col span={8} offset={1}>
                     <Space size={[0, 8]} wrap>
                         <Tag color="magenta">magenta</Tag>
@@ -149,7 +180,7 @@ const Post = () => {
                 </Col>
                 <Col span={5} push={4}>
                     <div>
-                        <p style={{color:'red'}}>调用时间：300ms，主机1.1.1.1</p>
+                        <p style={{ color: 'red' }}>调用时间：300ms，主机1.1.1.1</p>
                     </div>
                 </Col>
             </Row>

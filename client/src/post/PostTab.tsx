@@ -92,20 +92,41 @@ const PostTab = () => {
     const [items, setItems] = useState(initialItems);
     const newTabIndex = useRef(0);
     const [value, setValue] = useState<UserValue[]>([]);
+    const [oldvalues, setoldvalues] = useState<string[]>([]);
 
     const onChange = (newActiveKey: string) => {
         setActiveKey(newActiveKey);
     };
 
-    const add = (key?: number) => {
-        const newActiveKey = `newTab${newTabIndex.current++}`;
-        const newPanes = [...items];
-        newPanes.push({ label: 'New Tab', children: <Post />, key: newActiveKey });
-        setItems(newPanes);
-        setActiveKey(newActiveKey);
+    const add = (newValue?: UserValue | UserValue[]) => {
+        if (newValue !== undefined && Array.isArray(newValue) && newValue.length > 0) {
+            for (let i = 0; i < newValue.length; i++) {
+                let value = newValue[i].value;
+                const newActiveKey = `old${value}`;
+                console.log('value::::::::::' + 'old'.concat(value));
+                if (oldvalues.includes('old'.concat(value))) {
+                    continue;
+                } else {
+                    oldvalues.push('old'.concat(value));
+                }
+                setoldvalues(oldvalues);
+                const newPanes = [...items];
+                newPanes.push({ label: 'New Tab', children: <Post api_id={value} />, key: newActiveKey });
+                console.log('newpanes' + newPanes);
+                setItems(newPanes);
+                setActiveKey(newActiveKey);
+            }
+        } else {
+            const newActiveKey = `newTab${newTabIndex.current++}`;
+            const newPanes = [...items];
+            newPanes.push({ label: 'New Tab', children: <Post />, key: newActiveKey });
+            setItems(newPanes);
+            setActiveKey(newActiveKey);
+        }
     };
 
     const remove = (targetKey: TargetKey) => {
+        console.log('remove' + targetKey);
         let newActiveKey = activeKey;
         let lastIndex = -1;
         items.forEach((item, i) => {
@@ -146,7 +167,17 @@ const PostTab = () => {
                         placeholder="Select Api..."
                         fetchOptions={fetchUserList}
                         onChange={(newValue) => {
-                            add();
+                            console.log('onChange', newValue);
+                            add(newValue)
+
+                            let newkeys: string[] = Array.isArray(newValue) ? newValue.map((item) => 'old'.concat(item.value)) : [];
+                            let notinold: string[] = oldvalues.filter((item) => !newkeys.includes(item));
+                            console.log('notinold' + notinold);
+                            if (notinold.length > 0) {
+                                //remove(notinold[0]) from oldvalues
+                                setoldvalues(oldvalues.filter((item) => !notinold.includes(item)));
+                                remove(notinold[0])
+                            }
                             setValue(newValue as UserValue[]);
                         }}
                         style={{ width: '100%' }}
