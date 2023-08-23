@@ -33,12 +33,96 @@ app.use(body_parser_1.default.json());
 app.get('/', (req, res) => {
     res.send('Hello, Express!');
 });
-app.post('/postapi', (req, res) => {
-});
+app.get('/apiinfo/:api_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const api_id = req.params.api_id;
+    const connection = yield (0, typeorm_1.createConnection)();
+    try {
+        const apiinfo = {
+            api_info: {},
+            api_content: {},
+            api_label_info: []
+        };
+        const queryResult = yield connection.query(`SELECT * FROM api_info where api_id=${api_id}`);
+        const api_content = yield connection.query(`SELECT * FROM api_content where api_id=${api_id}`);
+        const api_label_infos = yield connection.query(`select *  from api_label_info a , api_label_dict b where a.label_id=b.label_id and a.api_id=${api_id}`);
+        apiinfo.api_info = queryResult[0];
+        apiinfo.api_content = api_content[0];
+        apiinfo.api_label_info = api_label_infos;
+        res.send(apiinfo);
+    }
+    catch (error) {
+        console.error("Error:", error);
+    }
+    finally {
+        // 关闭连接
+        yield connection.close();
+    }
+}));
+app.delete('/apiinfo:api_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const api_id = req.params.api_id;
+    const connection = yield (0, typeorm_1.createConnection)();
+    try {
+        const queryResult = yield connection.query(`delete FROM api_info where api_id=${api_id}`);
+        console.log("Query result:", queryResult);
+        res.send(queryResult);
+    }
+    catch (error) {
+        console.error("Error:", error);
+    }
+    finally {
+        // 关闭连接
+        yield connection.close();
+    }
+}));
 app.get('/searchapi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const connection = yield (0, typeorm_1.createConnection)();
     try {
         const queryResult = yield connection.query("SELECT * FROM api_info");
+        console.log("Query result:", queryResult);
+        res.send(queryResult);
+    }
+    catch (error) {
+        console.error("Error:", error);
+    }
+    finally {
+        // 关闭连接
+        yield connection.close();
+    }
+}));
+app.get('/getApiListsByPage', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const connection = yield (0, typeorm_1.createConnection)();
+    try {
+        const queryResult = yield connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
+        console.log("Query result:", queryResult);
+        res.send(queryResult);
+    }
+    catch (error) {
+        console.error("Error:", error);
+    }
+    finally {
+        // 关闭连接
+        yield connection.close();
+    }
+}));
+app.get('/getApiContentByApiId', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const connection = yield (0, typeorm_1.createConnection)();
+    try {
+        const queryResult = yield connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
+        console.log("Query result:", queryResult);
+        res.send(queryResult);
+    }
+    catch (error) {
+        console.error("Error:", error);
+    }
+    finally {
+        // 关闭连接
+        yield connection.close();
+    }
+}));
+app.get('/deleteApiInfoByApiId', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const connection = yield (0, typeorm_1.createConnection)();
+    try {
+        const queryResult = yield connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
         console.log("Query result:", queryResult);
         res.send(queryResult);
     }

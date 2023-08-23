@@ -6,17 +6,15 @@ import type { SelectProps } from 'antd';
 import { Divider, Tag } from 'antd';
 
 
-const handleChange = (value: string[]) => {
-    console.log(`selected ${value}`);
-};
 const Post = (props?: { api_id?: string; }) => {
     const [open, setOpen] = React.useState(false);
-    const [outtxt, setouttxt] = React.useState('');
+    const [outjson, setoutjson] = React.useState('');
     const [url, seturl] = React.useState('');
     const [injson, setinjson] = React.useState('');
     const [desc, setdesc] = React.useState('0');
     const [options, setoptions] = React.useState<SelectProps['options']>([]);
     const [labels, setlabels] = React.useState<string[]>([]);
+    const [labelnames, setlabelnames] = React.useState<string[]>([]);
     const handleChange = (value: string[]) => {
         console.log(`selected ${value}`);
         setlabels(value);
@@ -28,28 +26,25 @@ const Post = (props?: { api_id?: string; }) => {
 
     React.useEffect(() => {
         if (props?.api_id) {
-            fetch('http://localhost:5000/getapi', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ api_id: props.api_id }),
-            })
+            console.log(props.api_id);
+            fetch(`http://localhost:5000/apiinfo/${props.api_id}`)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log('Success:', data);
-                    seturl(data.url);
-                    setinjson(data.in_json);
-                    setouttxt(data.out_json);
-                    setdesc(data.desc);
-                    let options: SelectProps['options'] = [];
-                    for (let i = 0; i < data.labels.length; i++) {
-                        options.push({
-                            label: data.labels[i],
-                            value: data.labels[i],
-                        });
-                    }
-                    setoptions(options);
+                    let url = data.api_info.url;
+                    let injson = data.api_content.in_json;
+                    let outjson = data.api_content.out_json;
+                    let api_label_info = data.api_label_info;
+                    api_label_info.forEach((element: any) => {
+                        labelnames.push(element.label_name);
+                    });
+                    setlabelnames(labelnames);
+                    seturl(url);
+                    //json格式化
+                    injson = JSON.stringify(JSON.parse(injson), null, 4);
+                    outjson = JSON.stringify(JSON.parse(outjson), null, 4);
+                    setinjson(injson);
+                    setoutjson(outjson);
                 })
                 .catch((error) => {
                     console.error('Error:', error);
@@ -58,6 +53,21 @@ const Post = (props?: { api_id?: string; }) => {
     }, []);
 
     const showDrawer = () => {
+        //if outjson is empty,message.error('output json is empty'); then return;
+        if (outjson === '') {
+            message.error('output json is empty');
+            return;
+        }
+        //if injson is empty,message.error('input json is empty'); then return;
+        if (injson === '') {
+            message.error('input json is empty');
+            return;
+        }
+        //if url is empty,message.error('api name is empty'); then return;
+        if (url === '') {
+            message.error('api name is empty');
+            return;
+        }
         setOpen(true);
         //getlabeldict
         fetch('http://localhost:5000/getlabeldict', {
@@ -83,12 +93,9 @@ const Post = (props?: { api_id?: string; }) => {
             });
 
     };
-    const descchange = (e: any) => {
-        setdesc(e.target.value);
-    }
 
     const postapi = () => {
-        setouttxt('');
+        setoutjson('');
         if (url === '') {
             message.error('api name is empty');
             return;
@@ -97,13 +104,22 @@ const Post = (props?: { api_id?: string; }) => {
             message.error('input json is empty');
             return;
         }
-        setouttxt('loading...');
+        //check if injson is json,if not,message.error('input json is not json'); then return;
+        try {
+            JSON.parse(injson);
+        } catch (e) {
+            message.error('input json is not json');
+            return;
+        }
+        setoutjson('loading...');
     }
     const apichange = (e: any) => {
         seturl(e.target.value);
     }
     const injsonchange = (e: any) => {
-        setinjson(e.target.value);
+        //json格式化
+        let targetvalue = e.target.value;
+        setinjson(targetvalue);
     }
 
     const insertdata = (values: any) => {
@@ -115,11 +131,7 @@ const Post = (props?: { api_id?: string; }) => {
             message.error('input json is empty');
             return;
         }
-        if (desc === '') {
-            message.error('desc is empty');
-            return;
-        }
-        if (outtxt === '') {
+        if (outjson === '') {
             message.error('output json is empty');
             return;
         }
@@ -132,12 +144,12 @@ const Post = (props?: { api_id?: string; }) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ url: url, desc: desc, in_json: injson, out_json: outtxt, labels: labels }),
+            body: JSON.stringify({ url: url, desc: desc, in_json: injson, out_json: outjson, labels: labels }),
         })
             .then((response) => response.json())
             .then((data) => {
                 console.log('Success:', data);
-                setouttxt(JSON.stringify(data));
+                setoutjson(JSON.stringify(data));
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -150,7 +162,7 @@ const Post = (props?: { api_id?: string; }) => {
             <br />
             <Row>
                 <Col span={8} offset={1}>
-                    <Input onChange={apichange} placeholder="input api" />
+                    <Input onChange={apichange} placeholder="input api" value={url} />
                 </Col>
                 <Col span={3}>
                     <Space size={"middle"}>
@@ -167,15 +179,16 @@ const Post = (props?: { api_id?: string; }) => {
             <Row style={{ textAlign: "left", alignItems: "center" }}>
                 <Col span={8} offset={1}>
                     <Space size={[0, 8]} wrap>
-                        <Tag color="magenta">magenta</Tag>
-                        <Tag color="red">red</Tag>
-                        <Tag color="volcano">volcano</Tag>
-                        <Tag color="orange">orange</Tag>
-                        <Tag color="gold">gold</Tag>
-                        <Tag color="lime">lime</Tag>
-                        <Tag color="green">green</Tag>
-                        <Tag color="cyan">cyan</Tag>
-                        <Tag color="cyan">cyan</Tag>
+                        {
+                            labelnames.map((item, index) => {
+                                let colors = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'cyan'];
+                                //随机颜色
+                                let color = colors[Math.floor(Math.random() * colors.length)];
+                                return (
+                                    <Tag key={index} color={color}>{item}</Tag>
+                                )
+                            })
+                        }
                     </Space>
                 </Col>
                 <Col span={5} push={4}>
@@ -188,11 +201,11 @@ const Post = (props?: { api_id?: string; }) => {
             <br />
             <Row justify={"space-around"}>
                 <Col span={10}>
-                    <TextArea rows={40} placeholder={'content'} onChange={injsonchange}>
+                    <TextArea rows={40} placeholder={'content'} onChange={injsonchange} value={injson}>
                     </TextArea>
                 </Col>
                 <Col span={10}>
-                    <TextArea rows={40} value={outtxt} placeholder={'return'}>
+                    <TextArea rows={40} value={outjson} placeholder={'return'}>
                     </TextArea>
                 </Col>
             </Row>
@@ -218,17 +231,6 @@ const Post = (props?: { api_id?: string; }) => {
                     }
                 >
                     <Form layout="vertical" hideRequiredMark>
-                        {/* <Row gutter={16}>
-                            <Col span={12}>
-                                <Form.Item
-                                    name="desc"
-                                    label="desc:"
-                                    rules={[{ required: true, message: 'Please enter api desc' }]}
-                                >
-                                    <Input placeholder="Please enter api desc" onChange={descchange} />
-                                </Form.Item>
-                            </Col>
-                        </Row> */}
                         <Row gutter={16}>
                             <Col span={12}>
                                 <Form.Item

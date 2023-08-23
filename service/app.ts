@@ -23,17 +23,22 @@ app.get('/', (req: any, res: { send: (arg0: string) => void; }) => {
   res.send('Hello, Express!');
 });
 
-app.post('/postapi', (req: { query: { url: any; desc: any; }; }, res: { send: (arg0: any) => void; }) => {
-
-});
-
-
-app.get('/searchapi', async (req: { query: { searchTerm: any; }; }, res: { send: (arg0: any) => void; }) => {
+app.get('/apiinfo/:api_id', async (req: any, res: { send: (arg0: any) => void; }) => {
+  const api_id = req.params.api_id;
   const connection: Connection = await createConnection();
   try {
-    const queryResult = await connection.query("SELECT * FROM api_info");
-    console.log("Query result:", queryResult);
-    res.send(queryResult);
+    const apiinfo: { api_info: {}, api_content: {}, api_label_info: [] } = {
+      api_info: {},
+      api_content: {},
+      api_label_info: []
+    };
+    const queryResult = await connection.query(`SELECT * FROM api_info where api_id=${api_id}`);
+    const api_content = await connection.query(`SELECT * FROM api_content where api_id=${api_id}`);
+    const api_label_infos = await connection.query(`select *  from api_label_info a , api_label_dict b where a.label_id=b.label_id and a.api_id=${api_id}`);
+    apiinfo.api_info = queryResult[0];
+    apiinfo.api_content = api_content[0];
+    apiinfo.api_label_info = api_label_infos
+    res.send(apiinfo);
   } catch (error) {
     console.error("Error:", error);
   } finally {
@@ -41,8 +46,6 @@ app.get('/searchapi', async (req: { query: { searchTerm: any; }; }, res: { send:
     await connection.close();
   }
 });
-
-
 
 app.get('/getApiListsByPage', async (req: any, res: { send: (arg0: any) => void; }) => {
   const connection: Connection = await createConnection();
