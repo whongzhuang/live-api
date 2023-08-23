@@ -1,10 +1,12 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { createConnection, Connection } from "typeorm";
+import { connect } from 'http2';
 
 
 const app = express();
 const port = 5000;
+
 
 app.all('*', function (req: { method: string; }, res: { header: (arg0: string, arg1: string) => void; send: (arg0: number) => void; }, next: () => void) {
   res.header('Access-Control-Allow-Origin', '*'); //项目上线后改成页面的地址
@@ -19,13 +21,22 @@ app.all('*', function (req: { method: string; }, res: { header: (arg0: string, a
 // 使用 body-parser 解析 JSON 数据
 app.use(bodyParser.json());
 
+
+let connection: Connection;
+createConnection().then(cnn => {
+  connection = cnn;
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+
+});
+
 app.get('/', (req: any, res: { send: (arg0: string) => void; }) => {
   res.send('Hello, Express!');
 });
 
 app.get('/apiinfo/:api_id', async (req: any, res: { send: (arg0: any) => void; }) => {
   const api_id = req.params.api_id;
-  const connection: Connection = await createConnection();
   try {
     const apiinfo: { api_info: {}, api_content: {}, api_label_info: [] } = {
       api_info: {},
@@ -42,13 +53,10 @@ app.get('/apiinfo/:api_id', async (req: any, res: { send: (arg0: any) => void; }
   } catch (error) {
     console.error("Error:", error);
   } finally {
-    // 关闭连接
-    await connection.close();
   }
 });
 
 app.get('/getApiListsByPage', async (req: any, res: { send: (arg0: any) => void; }) => {
-  const connection: Connection = await createConnection();
   try {
     const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
     console.log("Query result:", queryResult);
@@ -56,13 +64,10 @@ app.get('/getApiListsByPage', async (req: any, res: { send: (arg0: any) => void;
   } catch (error) {
     console.error("Error:", error);
   } finally {
-    // 关闭连接
-    await connection.close();
   }
 });
 
 app.get('/getApiContentByApiId', async (req: any, res: { send: (arg0: any) => void; }) => {
-  const connection: Connection = await createConnection();
   try {
     const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
     console.log("Query result:", queryResult);
@@ -70,13 +75,10 @@ app.get('/getApiContentByApiId', async (req: any, res: { send: (arg0: any) => vo
   } catch (error) {
     console.error("Error:", error);
   } finally {
-    // 关闭连接
-    await connection.close();
   }
 });
 
 app.get('/deleteApiInfoByApiId', async (req: any, res: { send: (arg0: any) => void; }) => {
-  const connection: Connection = await createConnection();
   try {
     const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
     console.log("Query result:", queryResult);
@@ -84,15 +86,12 @@ app.get('/deleteApiInfoByApiId', async (req: any, res: { send: (arg0: any) => vo
   } catch (error) {
     console.error("Error:", error);
   } finally {
-    // 关闭连接
-    await connection.close();
   }
 });
 
 
 
 app.get('/getApiByLike', async (req: any, res: { send: (arg0: any) => void; }) => {
-  const connection: Connection = await createConnection();
   try {
     const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
     console.log("Query result:", queryResult);
@@ -100,8 +99,6 @@ app.get('/getApiByLike', async (req: any, res: { send: (arg0: any) => void; }) =
   } catch (error) {
     console.error("Error:", error);
   } finally {
-    // 关闭连接
-    await connection.close();
   }
 });
 
@@ -206,6 +203,3 @@ app.post('/insertdata', async (req, res) => {
 
 
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});

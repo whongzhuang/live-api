@@ -4,7 +4,7 @@ import { Button, Col, Drawer, Form, Input, Row, Space, message } from 'antd';
 import { Select } from 'antd';
 import type { SelectProps } from 'antd';
 import { Divider, Tag } from 'antd';
-
+import { isjson } from '././utils'
 
 const Post = (props?: { api_id?: string; }) => {
     const [open, setOpen] = React.useState(false);
@@ -104,13 +104,11 @@ const Post = (props?: { api_id?: string; }) => {
             message.error('input json is empty');
             return;
         }
-        //check if injson is json,if not,message.error('input json is not json'); then return;
-        try {
-            JSON.parse(injson);
-        } catch (e) {
-            message.error('input json is not json');
+        if (!isjson(injson)) {
+            message.error('input json is not valid');
             return;
         }
+
         setoutjson('loading...');
     }
     const apichange = (e: any) => {
@@ -182,7 +180,6 @@ const Post = (props?: { api_id?: string; }) => {
                         {
                             labelnames.map((item, index) => {
                                 let colors = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'cyan'];
-                                //随机颜色
                                 let color = colors[Math.floor(Math.random() * colors.length)];
                                 return (
                                     <Tag key={index} color={color}>{item}</Tag>
