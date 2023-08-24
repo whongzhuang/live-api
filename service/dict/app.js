@@ -31,14 +31,20 @@ app.all('*', function (req, res, next) {
 // 使用 body-parser 解析 JSON 数据
 app.use(body_parser_1.default.json());
 let connection;
-(0, typeorm_1.createConnection)().then(cnn => {
-    connection = cnn;
-    app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
-    });
+// createConnection().then(cnn => {
+//   connection = cnn;
+//   app.listen(port, () => {
+//     console.log(`Server is running on port ${port}`);
+//   });
+// });
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
 app.get('/', (req, res) => {
     res.send('Hello, Express!');
+});
+app.post('/test', (req, res) => {
+    res.send({ 'Hello, Express!': 'ddd' });
 });
 app.get('/apiinfo/:api_id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const api_id = req.params.api_id;

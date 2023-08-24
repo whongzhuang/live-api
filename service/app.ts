@@ -23,16 +23,24 @@ app.use(bodyParser.json());
 
 
 let connection: Connection;
-createConnection().then(cnn => {
-  connection = cnn;
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
+// createConnection().then(cnn => {
+//   connection = cnn;
+//   app.listen(port, () => {
+//     console.log(`Server is running on port ${port}`);
+//   });
 
+// });
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 app.get('/', (req: any, res: { send: (arg0: string) => void; }) => {
   res.send('Hello, Express!');
+});
+
+app.post('/test', (req: any, res: { send: (arg0: {}) => void; }) => {
+  res.send({ 'Hello, Express!': 'ddd' });
 });
 
 app.get('/apiinfo/:api_id', async (req: any, res: { send: (arg0: any) => void; }) => {

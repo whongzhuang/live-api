@@ -4,7 +4,7 @@ import { Button, Col, Drawer, Form, Input, Row, Space, message } from 'antd';
 import { Select } from 'antd';
 import type { SelectProps } from 'antd';
 import { Divider, Tag } from 'antd';
-import { isjson } from '././utils'
+import { isjson } from '../utils'
 
 const Post = (props?: { api_id?: string; }) => {
     const [open, setOpen] = React.useState(false);
@@ -91,7 +91,6 @@ const Post = (props?: { api_id?: string; }) => {
             .catch((error) => {
                 console.error('Error:', error);
             });
-
     };
 
     const postapi = () => {
@@ -109,7 +108,24 @@ const Post = (props?: { api_id?: string; }) => {
             return;
         }
 
-        setoutjson('loading...');
+        //A POST request with JSON data
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: injson,
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+                //json格式化
+                let outjson = JSON.stringify(data, null, 4);
+                setoutjson(outjson);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }
     const apichange = (e: any) => {
         seturl(e.target.value);
