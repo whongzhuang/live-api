@@ -1,6 +1,10 @@
 {
-    "type": "sqlite",
-    "database": "C:/Users/leovo/Desktop/sqllite3/mydatabase.db",
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "qwe123123",
+    "database": "mydata",
     "entities": [
         "src/entities/*.ts"
     ],

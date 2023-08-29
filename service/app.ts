@@ -1,12 +1,17 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { createConnection, Connection } from "typeorm";
-import { connect } from 'http2';
+import { createConnection, getConnection } from 'typeorm';
 
 
 const app = express();
 const port = 5000;
 
+let connection: any = null;
+createConnection().then(connection1 => {
+  connection = getConnection();
+}).catch(error => {
+  console.error('Database connection error:', error);
+});
 
 app.all('*', function (req: { method: string; }, res: { header: (arg0: string, arg1: string) => void; send: (arg0: number) => void; }, next: () => void) {
   res.header('Access-Control-Allow-Origin', '*'); //项目上线后改成页面的地址
@@ -21,15 +26,6 @@ app.all('*', function (req: { method: string; }, res: { header: (arg0: string, a
 // 使用 body-parser 解析 JSON 数据
 app.use(bodyParser.json());
 
-
-let connection: Connection;
-// createConnection().then(cnn => {
-//   connection = cnn;
-//   app.listen(port, () => {
-//     console.log(`Server is running on port ${port}`);
-//   });
-
-// });
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
@@ -112,7 +108,6 @@ app.get('/getApiByLike', async (req: any, res: { send: (arg0: any) => void; }) =
 
 
 app.get('/getlabeldict', async (req: any, res: { send: (arg0: any) => void; }) => {
-  const connection: Connection = await createConnection();
   try {
     const queryResult = await connection.query("SELECT * FROM api_label_dict");
     console.log("Query result:", queryResult);
@@ -127,8 +122,6 @@ app.get('/getlabeldict', async (req: any, res: { send: (arg0: any) => void; }) =
 
 app.post('/insertdata', async (req, res) => {
   const { api_id, url, desc, in_json, out_json, labels } = req.body;
-  const connection: Connection = await createConnection();
-
   const queryRunner = connection.createQueryRunner();
 
   const currentTime = new Date().toISOString();

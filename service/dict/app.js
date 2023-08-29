@@ -17,6 +17,12 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const typeorm_1 = require("typeorm");
 const app = (0, express_1.default)();
 const port = 5000;
+let connection = null;
+(0, typeorm_1.createConnection)().then(connection1 => {
+    connection = (0, typeorm_1.getConnection)();
+}).catch(error => {
+    console.error('Database connection error:', error);
+});
 app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*'); //项目上线后改成页面的地址
     res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,Content-Length,Authorization,Accept');
@@ -30,13 +36,6 @@ app.all('*', function (req, res, next) {
 });
 // 使用 body-parser 解析 JSON 数据
 app.use(body_parser_1.default.json());
-let connection;
-// createConnection().then(cnn => {
-//   connection = cnn;
-//   app.listen(port, () => {
-//     console.log(`Server is running on port ${port}`);
-//   });
-// });
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
@@ -117,7 +116,6 @@ app.get('/getApiByLike', (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 }));
 app.get('/getlabeldict', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const connection = yield (0, typeorm_1.createConnection)();
     try {
         const queryResult = yield connection.query("SELECT * FROM api_label_dict");
         console.log("Query result:", queryResult);
@@ -133,7 +131,6 @@ app.get('/getlabeldict', (req, res) => __awaiter(void 0, void 0, void 0, functio
 }));
 app.post('/insertdata', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { api_id, url, desc, in_json, out_json, labels } = req.body;
-    const connection = yield (0, typeorm_1.createConnection)();
     const queryRunner = connection.createQueryRunner();
     const currentTime = new Date().toISOString();
     const postNum = 0; // Initial value
