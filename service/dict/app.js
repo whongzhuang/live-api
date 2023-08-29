@@ -14,15 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const typeorm_1 = require("typeorm");
+const axios_1 = __importDefault(require("axios"));
+const qs = require('qs');
 const app = (0, express_1.default)();
 const port = 5000;
 let connection = null;
-(0, typeorm_1.createConnection)().then(connection1 => {
-    connection = (0, typeorm_1.getConnection)();
-}).catch(error => {
-    console.error('Database connection error:', error);
-});
+// createConnection().then(connection1 => {
+//   connection = getConnection();
+// }).catch(error => {
+//   console.error('Database connection error:', error);
+// });
 app.all('*', function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*'); //项目上线后改成页面的地址
     res.header('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,Content-Length,Authorization,Accept');
@@ -42,6 +43,27 @@ app.listen(port, () => {
 app.get('/', (req, res) => {
     res.send('Hello, Express!');
 });
+app.post('/postapi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { url, injson } = req.body;
+    //发起post请求
+    const data = qs.stringify({ 'injson': injson });
+    const config = {
+        method: 'post',
+        url: url,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: data
+    };
+    (0, axios_1.default)(config)
+        .then(function (response) {
+        console.log(JSON.stringify(response.data));
+        res.send(response.data);
+    })
+        .catch(function (error) {
+        console.log(error);
+    });
+}));
 app.post('/test', (req, res) => {
     res.send({ 'Hello, Express!': 'ddd' });
 });

@@ -107,19 +107,19 @@ const Post = (props?: { api_id?: string; }) => {
             message.error('input json is not valid');
             return;
         }
-
-        //A POST request with JSON data
-        fetch(url, {
+        fetch('http://localhost:5000/postapi', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: injson,
+            body: JSON.stringify({
+                url: url,
+                injson: injson,
+            }),
         })
             .then((response) => response.json())
             .then((data) => {
                 console.log('Success:', data);
-                //json格式化
                 let outjson = JSON.stringify(data, null, 4);
                 setoutjson(outjson);
             })
@@ -127,11 +127,12 @@ const Post = (props?: { api_id?: string; }) => {
                 console.error('Error:', error);
             });
     }
+
+
     const apichange = (e: any) => {
         seturl(e.target.value);
     }
     const injsonchange = (e: any) => {
-        //json格式化
         let targetvalue = e.target.value;
         setinjson(targetvalue);
     }

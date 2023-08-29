@@ -1,17 +1,19 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { createConnection, getConnection } from 'typeorm';
+import axios, { AxiosRequestConfig } from 'axios';
+const qs = require('qs');
 
 
 const app = express();
 const port = 5000;
 
 let connection: any = null;
-createConnection().then(connection1 => {
-  connection = getConnection();
-}).catch(error => {
-  console.error('Database connection error:', error);
-});
+// createConnection().then(connection1 => {
+//   connection = getConnection();
+// }).catch(error => {
+//   console.error('Database connection error:', error);
+// });
 
 app.all('*', function (req: { method: string; }, res: { header: (arg0: string, arg1: string) => void; send: (arg0: number) => void; }, next: () => void) {
   res.header('Access-Control-Allow-Origin', '*'); //项目上线后改成页面的地址
@@ -34,6 +36,32 @@ app.listen(port, () => {
 app.get('/', (req: any, res: { send: (arg0: string) => void; }) => {
   res.send('Hello, Express!');
 });
+
+
+app.post('/postapi', async (req, res) => {
+  const { url, injson } = req.body;
+  //发起post请求
+  const data = qs.stringify({ 'injson': injson });
+  const config: AxiosRequestConfig = {
+    method: 'post',
+    url: url,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: data
+  };
+  axios(config)
+    .then(function (response: { data: any; }) {
+      console.log(JSON.stringify(response.data));
+      res.send(response.data);
+    }
+    )
+    .catch(function (error: any) {
+      console.log(error);
+    }
+    );
+});
+
 
 app.post('/test', (req: any, res: { send: (arg0: {}) => void; }) => {
   res.send({ 'Hello, Express!': 'ddd' });
