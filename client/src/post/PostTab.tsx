@@ -68,8 +68,8 @@ async function fetchUserList(username: string): Promise<UserValue[]> {
         .then((response) => response.json())
         .then((body) =>
             body?.map(
-                (api: { api_id: number, url: string }) => ({
-                    label: `${api.api_id} ${api.url}`,
+                (api: any) => ({
+                    label: `${api.api_id} ${api.url} ${api.last_update_time}  ${api.last_update_time}  '成功量：'${api.success_num}`,
                     value: api.api_id,
 
                 }),

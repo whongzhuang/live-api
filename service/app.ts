@@ -37,25 +37,25 @@ app.post('/postapi', async (req, res) => {
   const { url, injson } = req.body;
   res.send({ 'Hello, Express!': 'ddd' });
   //发起post请求
-  // const data = qs.stringify({ 'injson': injson });
-  // const config: AxiosRequestConfig = {
-  //   method: 'post',
-  //   url: url,
-  //   headers: {
-  //     'Content-Type': 'application/x-www-form-urlencoded'
-  //   },
-  //   data: data
-  // };
-  // axios(config)
-  //   .then(function (response: { data: any; }) {
-  //     console.log(JSON.stringify(response.data));
-  //     res.send(response.data);
-  //   }
-  //   )
-  //   .catch(function (error: any) {
-  //     console.log(error);
-  //   }
-  //   );
+  const data = qs.stringify({ 'injson': injson });
+  const config: AxiosRequestConfig = {
+    method: 'post',
+    url: url,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: data
+  };
+  axios(config)
+    .then(function (response: { data: any; }) {
+      console.log(JSON.stringify(response.data));
+      res.send(response.data);
+    }
+    )
+    .catch(function (error: any) {
+      console.log(error);
+    }
+    );
 });
 
 
