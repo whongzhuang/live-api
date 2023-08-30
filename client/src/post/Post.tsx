@@ -59,24 +59,21 @@ const Post = (props?: { api_id?: string; }) => {
     }, []);
 
     const showDrawer = () => {
-        //if outjson is empty,message.error('output json is empty'); then return;
         if (outjson === '') {
             message.error('output json is empty');
             return;
         }
-        //if injson is empty,message.error('input json is empty'); then return;
         if (injson === '') {
             message.error('input json is empty');
             return;
         }
-        //if url is empty,message.error('api name is empty'); then return;
         if (url === '') {
             message.error('api name is empty');
             return;
         }
         setOpen(true);
-        //getlabeldict
-        fetch('http://localhost:5000/getlabeldict', {
+        //apilabeldict
+        fetch('http://localhost:5000/apilabeldict', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -160,12 +157,16 @@ const Post = (props?: { api_id?: string; }) => {
             message.error('label is empty');
             return;
         }
+        let body: any = { url: url, desc: desc, in_json: injson, out_json: outjson, labels: labels };
+        if (props?.api_id) {
+            body['api_id'] = props.api_id;
+        }
         fetch('http://localhost:5000/insertdata', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ url: url, desc: desc, in_json: injson, out_json: outjson, labels: labels }),
+            body: JSON.stringify(body),
         })
             .then((response) => response.json())
             .then((data) => {

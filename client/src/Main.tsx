@@ -8,26 +8,26 @@ import Manage from './manage/Manage';
 import Settings from './settting/Settings';
 
 const items: MenuProps['items'] = [
-    {
-        label: 'postapi',
-        key: 'postapi',
-        icon: <MailOutlined />,
-    },
-    {
-        label: 'mock',
-        key: 'mock',
-        icon: <AppstoreOutlined />,
-    },
-    {
-        label: 'manage',
-        key: 'manage',
-        icon: <AppstoreOutlined />,
-    },
-    {
-        label: 'settings',
-        key: 'settings',
-        icon: <AppstoreOutlined />,
-    },
+    // {
+    //     label: 'postapi',
+    //     key: 'postapi',
+    //     icon: <MailOutlined />,
+    // },
+    // {
+    //     label: 'mock',
+    //     key: 'mock',
+    //     icon: <AppstoreOutlined />,
+    // },
+    // {
+    //     label: 'manage',
+    //     key: 'manage',
+    //     icon: <AppstoreOutlined />,
+    // },
+    // {
+    //     label: 'settings',
+    //     key: 'settings',
+    //     icon: <AppstoreOutlined />,
+    // },
 ];
 
 const App: React.FC = () => {
@@ -40,7 +40,7 @@ const App: React.FC = () => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', width: '35px' }}>
                 <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
             </div>
             <br />

@@ -28,13 +28,8 @@ app.all('*', function (req: { method: string; }, res: { header: (arg0: string, a
 // 使用 body-parser 解析 JSON 数据
 app.use(bodyParser.json());
 
-
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
-});
-
-app.get('/', (req: any, res: { send: (arg0: string) => void; }) => {
-  res.send('Hello, Express!');
 });
 
 
@@ -92,29 +87,7 @@ app.get('/apiinfo/:api_id', async (req: any, res: { send: (arg0: any) => void; }
   }
 });
 
-app.get('/getApiListsByPage', async (req: any, res: { send: (arg0: any) => void; }) => {
-  try {
-    const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
-    console.log("Query result:", queryResult);
-    res.send(queryResult);
-  } catch (error) {
-    console.error("Error:", error);
-  } finally {
-  }
-});
-
-app.get('/getApiContentByApiId', async (req: any, res: { send: (arg0: any) => void; }) => {
-  try {
-    const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
-    console.log("Query result:", queryResult);
-    res.send(queryResult);
-  } catch (error) {
-    console.error("Error:", error);
-  } finally {
-  }
-});
-
-app.get('/deleteApiInfoByApiId', async (req: any, res: { send: (arg0: any) => void; }) => {
+app.delete('/apiinfo/:api_id', async (req: any, res: { send: (arg0: any) => void; }) => {
   try {
     const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
     console.log("Query result:", queryResult);
@@ -139,7 +112,7 @@ app.get('/getApiByLike', async (req: any, res: { send: (arg0: any) => void; }) =
 });
 
 
-app.get('/getlabeldict', async (req: any, res: { send: (arg0: any) => void; }) => {
+app.get('/apilabeldict', async (req: any, res: { send: (arg0: any) => void; }) => {
   try {
     const queryResult = await connection.query("SELECT * FROM api_label_dict");
     console.log("Query result:", queryResult);
@@ -161,7 +134,7 @@ app.post('/insertdata', async (req, res) => {
 
   try {
     if (api_id != null) {
-      const queryResult0 = await sqlrunner.query(`SELECT max(api_id) as api_id FROM api_info where api_id=${api_id}}`);
+      const queryResult0 = await sqlrunner.query(`SELECT max(api_id) as api_id FROM api_info where api_id=${api_id}`);
       console.log("Query result:", queryResult0);
       if (queryResult0.length == 0) {
         res.send({ status: 400, msg: "api_id doesn't exist!" });

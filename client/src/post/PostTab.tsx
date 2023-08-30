@@ -160,7 +160,7 @@ const PostTab = () => {
     return (
         <div>
             <Row>
-                <Col span={8} offset={8}>
+                <Col span={15} offset={4}>
                     <DebounceSelect
                         mode="multiple"
                         value={value}
