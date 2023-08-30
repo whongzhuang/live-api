@@ -45,6 +45,12 @@ const Post = (props?: { api_id?: string; }) => {
                     outjson = JSON.stringify(JSON.parse(outjson), null, 4);
                     setinjson(injson);
                     setoutjson(outjson);
+                    setlabels(labelnames);
+                    //等待2s，输出labelnames
+                    setTimeout(() => {
+                        console.log('9999999999999999999999999' + labelnames);
+                    }
+                        , 2000);
                 })
                 .catch((error) => {
                     console.error('Error:', error);
@@ -255,7 +261,7 @@ const Post = (props?: { api_id?: string; }) => {
                                     <Select
                                         mode="tags"
                                         placeholder="Please select"
-                                        defaultValue={[]}
+                                        defaultValue={labels}
                                         onChange={handleChange}
                                         style={{ width: '100%' }}
                                         options={options}
