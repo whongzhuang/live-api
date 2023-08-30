@@ -171,7 +171,7 @@ const Post = (props?: { api_id?: string; }) => {
             .then((response) => response.json())
             .then((data) => {
                 console.log('Success:', data);
-                setoutjson(JSON.stringify(data));
+                onClose();
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -212,11 +212,11 @@ const Post = (props?: { api_id?: string; }) => {
                         }
                     </Space>
                 </Col>
-                <Col span={5} push={4}>
+                {/* <Col span={5} push={4}>
                     <div>
                         <p style={{ color: 'red' }}>调用时间：300ms，主机1.1.1.1</p>
                     </div>
-                </Col>
+                </Col> */}
             </Row>
 
             <br />

@@ -87,18 +87,6 @@ app.get('/apiinfo/:api_id', async (req: any, res: { send: (arg0: any) => void; }
   }
 });
 
-app.delete('/apiinfo/:api_id', async (req: any, res: { send: (arg0: any) => void; }) => {
-  try {
-    const queryResult = await connection.query("SELECT * FROM api_info where url like '%" + req.query.searchTerm + "%'");
-    console.log("Query result:", queryResult);
-    res.send(queryResult);
-  } catch (error) {
-    console.error("Error:", error);
-  } finally {
-  }
-});
-
-
 
 app.get('/getApiByLike', async (req: any, res: { send: (arg0: any) => void; }) => {
   try {
@@ -140,9 +128,26 @@ app.post('/insertdata', async (req, res) => {
         res.send({ status: 400, msg: "api_id doesn't exist!" });
         return;
       }
-      const updateApiInfoQuery = await sqlrunner.query(`UPDATE api_info SET url='${url}', api_desc='${desc}', last_update_time='${currentTime}' WHERE api_id=${api_id}`);
-      const updateApiContentQuery = await sqlrunner.query(`UPDATE api_content SET in_json='${in_json}', out_json='${out_json}', last_update_time='${currentTime}' WHERE api_id=${api_id}`);
-      const deleteApiLabelQuery = await sqlrunner.query(`DELETE FROM api_label_info WHERE api_id=${api_id}`);
+
+      const updateApiInfoQuery = await sqlrunner.query(`
+  UPDATE api_info
+  SET url = ?, last_update_time = ?
+  WHERE api_id = ?`,
+        [url, currentTime, api_id]
+      );
+
+      const updateApiContentQuery = await sqlrunner.query(`
+  UPDATE api_content
+  SET in_json = ?, out_json = ?, last_update_time = ?
+  WHERE api_id = ?`,
+        [in_json, out_json, currentTime, api_id]
+      );
+
+      const deleteApiLabelQuery = await sqlrunner.query(`
+  DELETE FROM api_label_info WHERE api_id = ?`,
+        [api_id]
+      );
+
       for (let i = 0; i < labels.length; i++) {
         //先查询app_label_dict中是否有该label，如果有则直接使用，如果没有则取该表最大id+1作为新的label_id
         const queryResult = await sqlrunner.query(`SELECT label_id FROM api_label_dict WHERE label_name='${labels[i]}'`);
@@ -152,12 +157,26 @@ app.post('/insertdata', async (req, res) => {
           const queryResult = await sqlrunner.query("SELECT max(label_id) as label_id FROM api_label_dict");
           console.log("Query result:", queryResult);
           nextLabelId = queryResult[0].label_id + 1;
-          const insertlabeldictquery = await sqlrunner.query(`INSERT INTO api_label_dict (label_id, label_name,create_time) 
-          VALUES (${nextLabelId}, '${labels[i]}','${currentTime}')`);
-          const insertLabelDictQuery = await sqlrunner.query(`INSERT INTO api_label_info (api_id, label_id) VALUES (${api_id}, ${nextLabelId})`);
+          const insertLabelDictQuery = await sqlrunner.query(`
+  INSERT INTO api_label_dict (label_id, label_name, create_time)
+  VALUES (?, ?, ?)`,
+            [nextLabelId, labels[i], currentTime]
+          );
+
+          const insertLabelInfoQuery = await sqlrunner.query(`
+  INSERT INTO api_label_info (api_id, label_id)
+  VALUES (?, ?)`,
+            [api_id, nextLabelId]
+          );
+
         } else {
           nextLabelId = queryResult[0].label_id;
-          const insertLabelDictQuery = await sqlrunner.query(`INSERT INTO api_label_info (api_id, label_id) VALUES (${api_id}, ${nextLabelId})`);
+          const insertLabelInfoQuery = await sqlrunner.query(`
+  INSERT INTO api_label_info (api_id, label_id)
+  VALUES (?, ?)`,
+            [api_id, nextLabelId]
+          );
+
         }
       }
     } else {
