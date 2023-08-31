@@ -213,11 +213,6 @@ const Post = (props?: { api_id?: string; }) => {
                         }
                     </Space>
                 </Col>
-                {/* <Col span={5} push={4}>
-                    <div>
-                        <p style={{ color: 'red' }}>调用时间：300ms，主机1.1.1.1</p>
-                    </div>
-                </Col> */}
             </Row>
 
             <br />
@@ -238,7 +233,7 @@ const Post = (props?: { api_id?: string; }) => {
             </Row>
             <div>
                 <Drawer
-                    title="Save a Api"
+                    title="保存"
                     width={720}
                     onClose={onClose}
                     open={open}
@@ -258,11 +253,11 @@ const Post = (props?: { api_id?: string; }) => {
                                 <Form.Item
                                     name="label"
                                     label="label:"
-                                    rules={[{ required: true, message: 'Please enter api desc' }]}
+                                    rules={[{ required: true, message: '标签不能为空' }]}
                                 >
                                     <Select
                                         mode="tags"
-                                        placeholder="Please select"
+                                        placeholder="选择标签"
                                         defaultValue={labels}
                                         onChange={handleChange}
                                         style={{ width: '100%' }}

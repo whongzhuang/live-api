@@ -2,7 +2,6 @@
 import React, { useRef, useState } from 'react';
 import { Tabs, Tag } from 'antd';
 import Post from './Post';
-import TextArea from "antd/es/input/TextArea";
 import { Button, Col, Drawer, Form, Input, Row, Space } from 'antd';
 import { useMemo } from 'react';
 import debounce from 'lodash/debounce';
@@ -69,7 +68,6 @@ async function fetchUserList(username: string): Promise<UserValue[]> {
         .then((body) =>
             body?.map(
                 (api: any) => ({
-                    // label: `${api.api_id} ${api.url} ${api.last_update_time}  ${api.last_update_time}  <Tag color="magenta">${api.success_num}</Tag>`,
                     label: (
                         <div>
                             <Tag color="blue">{api.api_id}</Tag>
@@ -207,7 +205,6 @@ const PostTab = () => {
                     </Tabs>
                 </Col>
             </Row>
-
         </div>
     )
 }
