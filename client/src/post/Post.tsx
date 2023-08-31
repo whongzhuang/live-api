@@ -60,15 +60,15 @@ const Post = (props?: { api_id?: string; }) => {
 
     const showDrawer = () => {
         if (outjson === '') {
-            message.error('output json is empty');
+            message.error('出参报文不能为空！');
             return;
         }
         if (injson === '') {
-            message.error('input json is empty');
+            message.error('入参报文不能为空！');
             return;
         }
         if (url === '') {
-            message.error('api name is empty');
+            message.error('接口不能为空！');
             return;
         }
         setOpen(true);
@@ -99,15 +99,15 @@ const Post = (props?: { api_id?: string; }) => {
     const postapi = () => {
         setoutjson('');
         if (url === '') {
-            message.error('api name is empty');
+            message.error('接口不能为空！');
             return;
         }
         if (injson === '') {
-            message.error('input json is empty');
+            message.error('入参不能为空！');
             return;
         }
         if (!isjson(injson)) {
-            message.error('input json is not valid');
+            message.error('入参不是JSON格式！');
             return;
         }
         fetch('http://localhost:5000/postapi', {
@@ -142,19 +142,19 @@ const Post = (props?: { api_id?: string; }) => {
 
     const insertdata = (values: any) => {
         if (url === '') {
-            message.error('api name is empty');
+            message.error('接口不能为空！');
             return;
         }
         if (injson === '') {
-            message.error('input json is empty');
+            message.error('入参不能为空！');
             return;
         }
         if (outjson === '') {
-            message.error('output json is empty');
+            message.error('出参不能为空！');
             return;
         }
         if (labels.length === 0) {
-            message.error('label is empty');
+            message.error('标签不能为空！');
             return;
         }
         let body: any = { url: url, desc: desc, in_json: injson, out_json: outjson, labels: labels };
@@ -172,6 +172,7 @@ const Post = (props?: { api_id?: string; }) => {
             .then((data) => {
                 console.log('Success:', data);
                 onClose();
+                message.success('保存成功');
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -184,16 +185,16 @@ const Post = (props?: { api_id?: string; }) => {
             <br />
             <Row>
                 <Col span={8} offset={1}>
-                    <Input onChange={apichange} placeholder="input api" value={url} />
+                    <Input onChange={apichange} placeholder="接口" value={url} />
                 </Col>
                 <Col span={3}>
                     <Space size={"middle"}>
                         <Button type="primary" onClick={postapi}>
-                            run
+                            运行
                         </Button>
                         <Button type="primary" onClick={() => {
                             showDrawer();
-                        }}>save</Button>
+                        }}>保存</Button>
                     </Space>
                 </Col>
             </Row>
@@ -222,11 +223,11 @@ const Post = (props?: { api_id?: string; }) => {
             <br />
             <Row justify={"space-around"}>
                 <Col span={10}>
-                    <TextArea rows={40} placeholder={'content'} onChange={injsonchange} value={injson}>
+                    <TextArea rows={40} placeholder={'入参报文'} onChange={injsonchange} value={injson}>
                     </TextArea>
                 </Col>
                 <Col span={10}>
-                    <TextArea rows={40} value={outjson} placeholder={'return'}>
+                    <TextArea rows={40} value={outjson} placeholder={'出参报文'} readOnly={true}>
                     </TextArea>
                 </Col>
             </Row>
